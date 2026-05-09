@@ -174,6 +174,23 @@
     .video-title { font-size:14px;font-weight:600;line-height:1.4;margin-bottom:5px; }
     .video-client { font-size:12px;color:rgba(255,255,255,.32); }
 
+    /* VIDEO MODAL */
+    body.modal-open { overflow:hidden; }
+    .video-modal { position:fixed;inset:0;z-index:900;display:grid;place-items:center;padding:32px;background:rgba(0,0,0,.82);backdrop-filter:blur(22px);opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s ease; }
+    .video-modal.active { opacity:1;visibility:visible; }
+    .video-modal-shell { position:relative;width:min(1120px,100%);max-height:calc(100vh - 64px);display:grid;grid-template-columns:minmax(0,1fr) 340px;background:#0f0f0f;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-card);overflow:hidden;box-shadow:0 32px 90px rgba(0,0,0,.74),0 0 80px rgba(255,208,0,.08);transform:translateY(16px) scale(.98);transition:transform .24s ease; }
+    .video-modal.active .video-modal-shell { transform:translateY(0) scale(1); }
+    .video-modal-player { position:relative;background:#000;aspect-ratio:16/9;min-height:360px;align-self:center; }
+    .video-modal-player iframe { width:100%;height:100%;border:0;display:block; }
+    .video-modal-info { padding:34px 30px;display:flex;flex-direction:column;justify-content:center;gap:16px;background:linear-gradient(180deg,#171717,#101010);border-left:1px solid rgba(255,255,255,.08); }
+    .video-modal-category { width:max-content;max-width:100%;background:rgba(255,208,0,.1);border:1px solid rgba(255,208,0,.24);color:var(--yellow);border-radius:var(--r-pill);padding:7px 12px;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase; }
+    .video-modal-title { font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:.98;letter-spacing:1.5px;overflow-wrap:anywhere; }
+    .video-modal-caption { font-size:14px;line-height:1.75;color:rgba(255,255,255,.56); }
+    .video-modal-client { font-size:12px;color:rgba(255,255,255,.34); }
+    .video-modal-close { position:absolute;top:22px;right:22px;z-index:2;width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:50%;background:rgba(18,18,18,.78);color:var(--white);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,transform .2s,border-color .2s; }
+    .video-modal-close:hover { background:var(--yellow);color:var(--black);border-color:var(--yellow);transform:scale(1.06); }
+    .video-modal-mobile-info { display:none; }
+
     /* ABOUT */
     .about-inner { display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center; }
     .about-logo-wrap { width:100%;aspect-ratio:1;background:var(--yellow);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden; }
@@ -243,6 +260,16 @@
       .hero h1 { font-size:58px; }
       .hero-actions { flex-direction:column;align-items:center; }
       .portfolio-header { flex-direction:column;align-items:flex-start;gap:20px; }
+      .video-modal { padding:0;background:#000;place-items:stretch; }
+      .video-modal-shell { width:100%;height:100%;max-height:none;display:block;border:0;border-radius:0;background:#000;box-shadow:none; }
+      .video-modal-player { width:100%;height:100%;min-height:0;aspect-ratio:auto;display:flex;align-items:center;justify-content:center;overflow:hidden; }
+      .video-modal-player iframe { width:100%;height:100%;max-width:56.25vh;max-height:100%;aspect-ratio:9/16;background:#000; }
+      .video-modal-info { display:none; }
+      .video-modal-mobile-info { position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:7px;padding:88px 20px 28px;background:linear-gradient(to top,rgba(0,0,0,.84),rgba(0,0,0,.46) 52%,transparent);pointer-events:none; }
+      .video-modal-mobile-info .video-modal-category { background:rgba(255,208,0,.16);backdrop-filter:blur(10px); }
+      .video-modal-mobile-info .video-modal-title { font-size:30px;max-width:86%; }
+      .video-modal-mobile-info .video-modal-caption { font-size:13px;line-height:1.55;max-width:92%;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden; }
+      .video-modal-close { top:14px;right:14px;background:rgba(0,0,0,.52);backdrop-filter:blur(10px); }
     }
   </style>
 </head>
@@ -349,6 +376,25 @@
   <div class="video-grid" id="videoGrid"></div>
 </section>
 
+<div class="video-modal" id="videoModal" aria-hidden="true" onclick="handleModalBackdrop(event)">
+  <button class="video-modal-close" type="button" aria-label="Tutup video" onclick="closeVideoModal()">x</button>
+  <div class="video-modal-shell" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
+    <div class="video-modal-player" id="videoModalPlayer"></div>
+    <div class="video-modal-info">
+      <div class="video-modal-category" id="videoModalCategory"></div>
+      <div class="video-modal-title" id="videoModalTitle"></div>
+      <p class="video-modal-caption" id="videoModalCaption"></p>
+      <div class="video-modal-client" id="videoModalClient"></div>
+    </div>
+    <div class="video-modal-mobile-info">
+      <div class="video-modal-category" id="videoModalMobileCategory"></div>
+      <div class="video-modal-title" id="videoModalMobileTitle"></div>
+      <p class="video-modal-caption" id="videoModalMobileCaption"></p>
+      <div class="video-modal-client" id="videoModalMobileClient"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ABOUT -->
 <section id="about">
   <div class="about-inner">
@@ -425,6 +471,11 @@ const DEFAULT_VIDEOS=[
   {id:3,title:"Motion Reel 2024",client:"Internal",category:"Motion Graphic",youtubeUrl:"https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
 ];
 const DEFAULT_MAIN={youtubeUrl:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",title:"Showreel 2024"};
+const DEFAULT_CAPTIONS={
+  1:"Narasi brand yang dirancang untuk membangun kedekatan emosional dengan audiens melalui visual yang kuat.",
+  2:"Iklan singkat dengan ritme cepat untuk kebutuhan campaign digital dan social media placement.",
+  3:"Kompilasi motion graphic, title treatment, dan visual system untuk berbagai kebutuhan komunikasi brand."
+};
 
 function loadVideos(){try{const s=localStorage.getItem('tripleaaa_videos');return s?JSON.parse(s):DEFAULT_VIDEOS;}catch(e){return DEFAULT_VIDEOS;}}
 function loadMain(){try{const s=localStorage.getItem('tripleaaa_main_video');return s?JSON.parse(s):DEFAULT_MAIN;}catch(e){return DEFAULT_MAIN;}}
@@ -439,6 +490,7 @@ window.addEventListener('storage',e=>{
 function getYouTubeId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&\n]+)/);return m?m[1]:null;}
 function getThumbnail(url){const id=getYouTubeId(url);return id?`https://img.youtube.com/vi/${id}/maxresdefault.jpg`:'';}
 function getEmbedUrl(url){const id=getYouTubeId(url);return id?`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`:'';}
+function escapeHTML(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function initHeroVideo(){
   const mv=loadMain();
@@ -464,15 +516,61 @@ function renderVideos(){
   const filtered=activeFilter==='all'?videoData:videoData.filter(v=>v.category===activeFilter);
   if(!filtered.length){grid.innerHTML=`<p style="color:rgba(255,255,255,.22);font-size:14px;grid-column:1/-1;padding:48px 0;text-align:center">Belum ada video untuk kategori ini.</p>`;return;}
   grid.innerHTML=filtered.map(v=>{
-    const thumb=getThumbnail(v.youtubeUrl),embed=getEmbedUrl(v.youtubeUrl);
-    return`<div class="video-card" id="card-${v.id}"><div class="video-thumb"><img src="${thumb}" alt="${v.title}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.background='#1a1a1a'"/><div class="video-overlay" onclick="playVideo(${v.id},'${embed}')"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div></div><div class="video-info"><div class="video-category">${v.category}</div><div class="video-title">${v.title}</div><div class="video-client">${v.client}</div></div></div>`;
+    const thumb=getThumbnail(v.youtubeUrl),safeId=escapeHTML(v.id);
+    return`<div class="video-card" id="card-${safeId}" data-video-id="${safeId}" role="button" tabindex="0"><div class="video-thumb"><img src="${escapeHTML(thumb)}" alt="${escapeHTML(v.title)}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.background='#1a1a1a'"/><div class="video-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div></div><div class="video-info"><div class="video-category">${escapeHTML(v.category)}</div><div class="video-title">${escapeHTML(v.title)}</div><div class="video-client">${escapeHTML(v.client)}</div></div></div>`;
   }).join('');
+  grid.querySelectorAll('.video-card').forEach(card=>{
+    card.addEventListener('click',()=>openVideoModal(card.dataset.videoId));
+    card.addEventListener('keydown',e=>handleVideoCardKey(e,card.dataset.videoId));
+  });
+  addInteractiveCursor();
 }
 
-function playVideo(id,embed){
-  const card=document.getElementById(`card-${id}`);
-  card.querySelector('.video-thumb').innerHTML=`<iframe src="${embed}" allow="autoplay;encrypted-media" allowfullscreen style="width:100%;height:100%;border:none;display:block"></iframe>`;
-  card.classList.add('playing');
+function handleVideoCardKey(event,id){
+  if(event.key==='Enter'||event.key===' '){
+    event.preventDefault();
+    openVideoModal(id);
+  }
+}
+
+function setText(id,value){
+  const el=document.getElementById(id);
+  if(el)el.textContent=value||'';
+}
+
+function openVideoModal(id){
+  const video=videoData.find(v=>String(v.id)===String(id));
+  if(!video)return;
+  const embed=getEmbedUrl(video.youtubeUrl);
+  if(!embed)return;
+  const modal=document.getElementById('videoModal');
+  const player=document.getElementById('videoModalPlayer');
+  const caption=video.caption||DEFAULT_CAPTIONS[String(video.id)]||`Project ${video.category||'video'} untuk ${video.client||'klien'} dari Triple AAA Agency.`;
+  player.innerHTML=`<iframe src="${embed}" title="${escapeHTML(video.title)}" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen></iframe>`;
+  setText('videoModalCategory',video.category);
+  setText('videoModalTitle',video.title);
+  setText('videoModalCaption',caption);
+  setText('videoModalClient',video.client?`Client: ${video.client}`:'');
+  setText('videoModalMobileCategory',video.category);
+  setText('videoModalMobileTitle',video.title);
+  setText('videoModalMobileCaption',caption);
+  setText('videoModalMobileClient',video.client?`Client: ${video.client}`:'');
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+  document.querySelector('.video-modal-close').focus();
+}
+
+function closeVideoModal(){
+  const modal=document.getElementById('videoModal');
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
+  document.getElementById('videoModalPlayer').innerHTML='';
+}
+
+function handleModalBackdrop(event){
+  if(event.target.id==='videoModal')closeVideoModal();
 }
 
 function filterVideos(cat,btn){
@@ -494,13 +592,22 @@ const cursor=document.getElementById('cursor'),ring=document.getElementById('cur
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
 (function animCursor(){cursor.style.left=mx+'px';cursor.style.top=my+'px';rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animCursor);})();
-document.querySelectorAll('a,button,.video-card,.hero-video-overlay').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cursor.style.width='5px';cursor.style.height='5px';ring.style.width='46px';ring.style.height='46px';ring.style.opacity='1';});
-  el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='34px';ring.style.height='34px';ring.style.opacity='.5';});
+function addInteractiveCursor(){
+  document.querySelectorAll('a,button,.video-card,.hero-video-overlay').forEach(el=>{
+    if(el.dataset.cursorReady)return;
+    el.dataset.cursorReady='true';
+    el.addEventListener('mouseenter',()=>{cursor.style.width='5px';cursor.style.height='5px';ring.style.width='46px';ring.style.height='46px';ring.style.opacity='1';});
+    el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='34px';ring.style.height='34px';ring.style.opacity='.5';});
+  });
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('videoModal').classList.contains('active'))closeVideoModal();
 });
 
 initHeroVideo();
 renderVideos();
+addInteractiveCursor();
 </script>
 </body>
 </html>
