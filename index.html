@@ -476,14 +476,33 @@ const DEFAULT_CAPTIONS={
   3:"Kompilasi motion graphic, title treatment, dan visual system untuk berbagai kebutuhan komunikasi brand."
 };
 
-function loadVideos(){try{const s=localStorage.getItem('tripleaaa_videos');return s?JSON.parse(s):DEFAULT_VIDEOS;}catch(e){return DEFAULT_VIDEOS;}}
-function loadMain(){try{const s=localStorage.getItem('tripleaaa_main_video');return s?JSON.parse(s):DEFAULT_MAIN;}catch(e){return DEFAULT_MAIN;}}
+const DATA_URL='videos.json';
 
-let videoData=loadVideos();
+function loadStoredVideos(){try{const s=localStorage.getItem('tripleaaa_videos');return s?JSON.parse(s):DEFAULT_VIDEOS;}catch(e){return DEFAULT_VIDEOS;}}
+function loadStoredMain(){try{const s=localStorage.getItem('tripleaaa_main_video');return s?JSON.parse(s):DEFAULT_MAIN;}catch(e){return DEFAULT_MAIN;}}
+function normalizeSiteData(data){
+  if(Array.isArray(data))return{mainVideo:DEFAULT_MAIN,videos:data};
+  return{
+    mainVideo:data&&data.mainVideo?data.mainVideo:DEFAULT_MAIN,
+    videos:data&&Array.isArray(data.videos)?data.videos:DEFAULT_VIDEOS
+  };
+}
+async function loadSiteData(){
+  try{
+    const res=await fetch(DATA_URL,{cache:'no-store'});
+    if(!res.ok)throw new Error('videos.json tidak ditemukan');
+    return normalizeSiteData(await res.json());
+  }catch(e){
+    return{mainVideo:loadStoredMain(),videos:loadStoredVideos()};
+  }
+}
+
+let mainVideoData=loadStoredMain();
+let videoData=loadStoredVideos();
 
 window.addEventListener('storage',e=>{
-  if(e.key==='tripleaaa_videos'){videoData=loadVideos();renderVideos();}
-  if(e.key==='tripleaaa_main_video')initHeroVideo();
+  if(e.key==='tripleaaa_videos'){videoData=loadStoredVideos();renderVideos();}
+  if(e.key==='tripleaaa_main_video'){mainVideoData=loadStoredMain();initHeroVideo();}
 });
 
 function getYouTubeId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&\n]+)/);return m?m[1]:null;}
@@ -492,7 +511,7 @@ function getEmbedUrl(url){const id=getYouTubeId(url);return id?`https://www.yout
 function escapeHTML(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function initHeroVideo(){
-  const mv=loadMain();
+  const mv=mainVideoData;
   const thumb=document.getElementById('heroThumb');
   const id=getYouTubeId(mv.youtubeUrl);
   if(id){
@@ -502,7 +521,7 @@ function initHeroVideo(){
 }
 
 function playHeroVideo(){
-  const mv=loadMain();
+  const mv=mainVideoData;
   const embedUrl=getEmbedUrl(mv.youtubeUrl);
   if(!embedUrl)return;
   const c=document.getElementById('heroVideoContainer');
@@ -716,9 +735,16 @@ document.getElementById('videoModalTrack').addEventListener('scroll',()=>{
   });
 },{passive:true});
 
-initHeroVideo();
-renderVideos();
-addInteractiveCursor();
+async function initSite(){
+  const data=await loadSiteData();
+  mainVideoData=data.mainVideo;
+  videoData=data.videos;
+  initHeroVideo();
+  renderVideos();
+  addInteractiveCursor();
+}
+
+initSite();
 </script>
 </body>
 </html>
