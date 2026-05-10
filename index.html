@@ -131,10 +131,25 @@
 
     /* STATS */
     .stats { display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,208,0,.12); }
-    .stat-item { background:var(--black);padding:44px 36px;display:flex;flex-direction:column;gap:6px;transition:background .3s; }
+    .stat-item { background:var(--black);padding:44px 36px;display:flex;flex-direction:column;gap:6px;transition:background .3s;border:0;text-align:left;color:inherit;font:inherit; }
     .stat-item:hover { background:#0f0f0f; }
+    .stat-item.is-clickable { cursor:pointer;position:relative; }
+    .stat-item.is-clickable::after { content:'Lihat klien';font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,208,0,.72);margin-top:10px;opacity:.75; }
     .stat-num { font-family:'Bebas Neue',sans-serif;font-size:62px;color:var(--yellow);line-height:1; }
     .stat-label { font-size:13px;color:rgba(255,255,255,.4); }
+    .client-showcase { max-height:0;overflow:hidden;background:#080808;border-bottom:1px solid rgba(255,208,0,.12);transition:max-height .55s ease; }
+    .client-showcase.open { max-height:260px; }
+    .client-showcase-inner { padding:26px 0 30px; }
+    .client-showcase-head { display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 48px 20px; }
+    .client-showcase-title { font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;color:var(--white); }
+    .client-showcase-sub { font-size:12px;color:rgba(255,255,255,.34); }
+    .client-logo-viewport { overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent); }
+    .client-logo-track { display:flex;align-items:center;gap:18px;width:max-content;animation:clientMarquee 28s linear infinite; }
+    .client-logo-card { width:180px;height:82px;display:flex;align-items:center;justify-content:center;background:#101010;border:1px solid rgba(255,255,255,.06);border-radius:6px;flex:0 0 auto; }
+    .client-logo-card img { max-width:124px;max-height:48px;object-fit:contain;filter:grayscale(1) contrast(1.12) brightness(1.18);opacity:.68;mix-blend-mode:luminosity;transition:opacity .2s,filter .2s; }
+    .client-logo-card:hover img { opacity:.9;filter:grayscale(1) contrast(1.18) brightness(1.3); }
+    .client-logo-fallback { font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1.5px;color:rgba(255,208,0,.72); }
+    @keyframes clientMarquee { from{transform:translateX(0)}to{transform:translateX(-50%)} }
 
     /* MARQUEE */
     .marquee-wrap { background:var(--yellow);padding:13px 0;overflow:hidden;border-top:1.5px solid rgba(0,0,0,.12);border-bottom:1.5px solid rgba(0,0,0,.12); }
@@ -264,6 +279,10 @@
       .nav-links { display:none; }
       section { padding:72px 20px; }
       .stats { grid-template-columns:repeat(2,1fr); }
+      .stat-item { padding:34px 24px; }
+      .client-showcase-head { padding:0 20px 18px;align-items:flex-start;flex-direction:column;gap:6px; }
+      .client-showcase.open { max-height:280px; }
+      .client-logo-card { width:148px;height:72px; }
       .services-grid { grid-template-columns:1fr;gap:10px; }
       .about-inner,.contact-inner { grid-template-columns:1fr;gap:40px; }
       footer { flex-direction:column;gap:20px;text-align:center; }
@@ -352,10 +371,23 @@
 
 <!-- STATS -->
 <div class="stats">
-  <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Project Selesai</div></div>
-  <div class="stat-item"><div class="stat-num">30+</div><div class="stat-label">Klien Puas</div></div>
-  <div class="stat-item"><div class="stat-num">5M+</div><div class="stat-label">Total Views</div></div>
-  <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Tahun Berpengalaman</div></div>
+  <div class="stat-item"><div class="stat-num" id="metricProjects">50+</div><div class="stat-label">Project Selesai</div></div>
+  <button class="stat-item is-clickable" type="button" onclick="toggleClientShowcase()" aria-expanded="false" aria-controls="clientShowcase"><div class="stat-num" id="metricClients">30+</div><div class="stat-label">Klien Puas</div></button>
+  <div class="stat-item"><div class="stat-num" id="metricViews">5M+</div><div class="stat-label">Total Views</div></div>
+  <div class="stat-item"><div class="stat-num" id="metricYears">3</div><div class="stat-label">Tahun Berpengalaman</div></div>
+</div>
+<div class="client-showcase" id="clientShowcase">
+  <div class="client-showcase-inner">
+    <div class="client-showcase-head">
+      <div>
+        <div class="client-showcase-title">Klien Yang Pernah Berkolaborasi</div>
+        <div class="client-showcase-sub">Logo dibuat redup dua-tone supaya tetap selaras dengan visual website.</div>
+      </div>
+    </div>
+    <div class="client-logo-viewport">
+      <div class="client-logo-track" id="clientLogoTrack"></div>
+    </div>
+  </div>
 </div>
 
 <!-- SERVICES -->
@@ -471,6 +503,13 @@ const DEFAULT_VIDEOS=[
   {id:3,title:"Motion Reel 2024",client:"Internal",category:"Motion Graphic",youtubeUrl:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",caption:"Kompilasi motion graphic, title treatment, dan visual system untuk berbagai kebutuhan komunikasi brand."}
 ];
 const DEFAULT_MAIN={youtubeUrl:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",title:"Showreel 2024"};
+const DEFAULT_METRICS={projects:"50+",clients:"30+",views:"5M+",years:"3"};
+const DEFAULT_CLIENT_LOGOS=[
+  {id:1,name:"Kiwoom Sekuritas Indonesia",src:""},
+  {id:2,name:"Klien A",src:""},
+  {id:3,name:"Klien B",src:""},
+  {id:4,name:"Triple AAA Internal",src:""}
+];
 const DEFAULT_CAPTIONS={
   1:"Narasi brand yang dirancang untuk membangun kedekatan emosional dengan audiens melalui visual yang kuat.",
   2:"Iklan singkat dengan ritme cepat untuk kebutuhan campaign digital dan social media placement.",
@@ -481,11 +520,15 @@ const DATA_URL='videos.json';
 
 function loadStoredVideos(){try{const s=localStorage.getItem('tripleaaa_videos');return s?JSON.parse(s):DEFAULT_VIDEOS;}catch(e){return DEFAULT_VIDEOS;}}
 function loadStoredMain(){try{const s=localStorage.getItem('tripleaaa_main_video');return s?JSON.parse(s):DEFAULT_MAIN;}catch(e){return DEFAULT_MAIN;}}
+function loadStoredMetrics(){try{const s=localStorage.getItem('tripleaaa_metrics');return s?{...DEFAULT_METRICS,...JSON.parse(s)}:DEFAULT_METRICS;}catch(e){return DEFAULT_METRICS;}}
+function loadStoredClientLogos(){try{const s=localStorage.getItem('tripleaaa_client_logos');return s?JSON.parse(s):DEFAULT_CLIENT_LOGOS;}catch(e){return DEFAULT_CLIENT_LOGOS;}}
 function normalizeSiteData(data){
   if(Array.isArray(data))return{mainVideo:DEFAULT_MAIN,videos:data};
   return{
     mainVideo:data&&data.mainVideo?data.mainVideo:DEFAULT_MAIN,
-    videos:data&&Array.isArray(data.videos)?data.videos:DEFAULT_VIDEOS
+    videos:data&&Array.isArray(data.videos)?data.videos:DEFAULT_VIDEOS,
+    metrics:data&&data.metrics?{...DEFAULT_METRICS,...data.metrics}:DEFAULT_METRICS,
+    clientLogos:data&&Array.isArray(data.clientLogos)?data.clientLogos:DEFAULT_CLIENT_LOGOS
   };
 }
 async function loadSiteData(){
@@ -494,16 +537,20 @@ async function loadSiteData(){
     if(!res.ok)throw new Error('videos.json tidak ditemukan');
     return normalizeSiteData(await res.json());
   }catch(e){
-    return{mainVideo:loadStoredMain(),videos:loadStoredVideos()};
+    return{mainVideo:loadStoredMain(),videos:loadStoredVideos(),metrics:loadStoredMetrics(),clientLogos:loadStoredClientLogos()};
   }
 }
 
 let mainVideoData=loadStoredMain();
 let videoData=loadStoredVideos();
+let metricData=loadStoredMetrics();
+let clientLogoData=loadStoredClientLogos();
 
 window.addEventListener('storage',e=>{
   if(e.key==='tripleaaa_videos'){videoData=loadStoredVideos();renderVideos();updatePortfolioStructuredData();}
   if(e.key==='tripleaaa_main_video'){mainVideoData=loadStoredMain();initHeroVideo();}
+  if(e.key==='tripleaaa_metrics'){metricData=loadStoredMetrics();renderMetrics();}
+  if(e.key==='tripleaaa_client_logos'){clientLogoData=loadStoredClientLogos();renderClientLogos();}
 });
 
 function getYouTubeId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&\n]+)/);return m?m[1]:null;}
@@ -597,6 +644,35 @@ function handleVideoCardKey(event,id){
 function setText(id,value){
   const el=document.getElementById(id);
   if(el)el.textContent=value||'';
+}
+
+function renderMetrics(){
+  setText('metricProjects',metricData.projects||DEFAULT_METRICS.projects);
+  setText('metricClients',metricData.clients||DEFAULT_METRICS.clients);
+  setText('metricViews',metricData.views||DEFAULT_METRICS.views);
+  setText('metricYears',metricData.years||DEFAULT_METRICS.years);
+}
+
+function renderClientLogos(){
+  const track=document.getElementById('clientLogoTrack');
+  const logos=(Array.isArray(clientLogoData)&&clientLogoData.length?clientLogoData:DEFAULT_CLIENT_LOGOS).filter(logo=>logo&&logo.name);
+  if(!track)return;
+  const items=[...logos,...logos];
+  track.innerHTML=items.map(logo=>{
+    const content=logo.src
+      ? `<img src="${escapeHTML(logo.src)}" alt="${escapeHTML(logo.name)} logo" loading="lazy"/>`
+      : `<div class="client-logo-fallback">${escapeHTML(logo.name)}</div>`;
+    return `<div class="client-logo-card">${content}</div>`;
+  }).join('');
+}
+
+function toggleClientShowcase(){
+  const panel=document.getElementById('clientShowcase');
+  const button=document.querySelector('.stat-item.is-clickable');
+  if(!panel||!button)return;
+  const next=!panel.classList.contains('open');
+  panel.classList.toggle('open',next);
+  button.setAttribute('aria-expanded',String(next));
 }
 
 function openVideoModal(id){
@@ -751,7 +827,7 @@ let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
 (function animCursor(){cursor.style.left=mx+'px';cursor.style.top=my+'px';rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animCursor);})();
 function addInteractiveCursor(){
-  document.querySelectorAll('a,button,.video-card,.hero-video-overlay').forEach(el=>{
+  document.querySelectorAll('a,button,.video-card,.hero-video-overlay,.stat-item.is-clickable').forEach(el=>{
     if(el.dataset.cursorReady)return;
     el.dataset.cursorReady='true';
     el.addEventListener('mouseenter',()=>{cursor.style.width='5px';cursor.style.height='5px';ring.style.width='46px';ring.style.height='46px';ring.style.opacity='1';});
@@ -774,7 +850,11 @@ async function initSite(){
   const data=await loadSiteData();
   mainVideoData=data.mainVideo;
   videoData=data.videos;
+  metricData=data.metrics||DEFAULT_METRICS;
+  clientLogoData=data.clientLogos||DEFAULT_CLIENT_LOGOS;
   initHeroVideo();
+  renderMetrics();
+  renderClientLogos();
   renderVideos();
   updatePortfolioStructuredData();
   addInteractiveCursor();

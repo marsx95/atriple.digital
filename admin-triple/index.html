@@ -351,12 +351,37 @@
     .settings-row:last-child { border-bottom: none; }
     .settings-row-label { font-size: 14px; }
     .settings-row-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+    .settings-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+    .client-logo-form {
+      display: grid; grid-template-columns: minmax(180px,1fr) minmax(220px,1.3fr) auto;
+      gap: 12px; align-items: end; margin-bottom: 18px;
+    }
+    .client-logo-list { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 12px; }
+    .client-logo-item {
+      background: var(--black); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px; padding: 14px; display: grid; gap: 12px;
+    }
+    .client-logo-preview {
+      height: 72px; display: flex; align-items: center; justify-content: center;
+      background: #101010; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px;
+    }
+    .client-logo-preview img {
+      max-width: 140px; max-height: 46px; object-fit: contain;
+      filter: grayscale(1) contrast(1.12) brightness(1.18); opacity: .72;
+    }
+    .client-logo-fallback {
+      font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.2px;
+      color: rgba(255,208,0,.75); text-align: center;
+    }
+    .client-logo-meta { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .client-logo-name { font-size: 13px; color: rgba(255,255,255,0.72); overflow-wrap: anywhere; }
 
     @media (max-width: 900px) {
       .sidebar { width: 60px; }
       .sidebar-logo-text, .sidebar-logo-sub, .nav-item span, .nav-badge, .sidebar-footer .sidebar-visit span, .sidebar-user { display: none; }
       .main { margin-left: 60px; }
       .stats-row { grid-template-columns: repeat(2,1fr); }
+      .settings-grid, .client-logo-form { grid-template-columns: 1fr; }
       .preview-grid { grid-template-columns: repeat(2,1fr); }
       .topbar { padding: 16px 20px; }
       .page { padding: 20px; }
@@ -575,6 +600,48 @@
           </div>
         </div>
         <div class="settings-group">
+          <div class="settings-label">Angka Website</div>
+          <div class="settings-grid">
+            <div class="form-group">
+              <label class="form-label">Project Selesai</label>
+              <input class="form-input" id="metricProjects" placeholder="50+"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Klien Puas</label>
+              <input class="form-input" id="metricClients" placeholder="30+"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Total Views</label>
+              <input class="form-input" id="metricViews" placeholder="5M+"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tahun Berpengalaman</label>
+              <input class="form-input" id="metricYears" placeholder="3"/>
+            </div>
+          </div>
+          <button class="modal-save" onclick="saveMetrics()">Simpan Angka Website</button>
+        </div>
+        <div class="settings-group">
+          <div class="settings-label">Logo Klien</div>
+          <div class="client-logo-form">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Nama Klien</label>
+              <input class="form-input" id="clientLogoName" placeholder="Contoh: Kiwoom Sekuritas Indonesia"/>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Upload Logo SVG/PNG</label>
+              <input class="form-input" id="clientLogoFile" type="file" accept=".svg,.png,image/svg+xml,image/png"/>
+              <div class="form-help">Logo akan tampil grayscale/two-tone di website supaya tidak terlalu ngejreng.</div>
+            </div>
+            <button class="modal-save" onclick="addClientLogo()">Tambah Logo</button>
+          </div>
+          <div class="client-logo-list" id="clientLogoList"></div>
+          <div class="empty-state" id="clientLogoEmpty" style="display:none;padding:34px 20px">
+            <div class="empty-title">Belum Ada Logo Klien</div>
+            <p>Upload SVG atau PNG untuk ditampilkan saat statistik Klien Puas diklik.</p>
+          </div>
+        </div>
+        <div class="settings-group">
           <div class="settings-label">Data</div>
           <div class="settings-row">
             <div>
@@ -690,6 +757,18 @@ const DEFAULT_MAIN_VIDEO = {
   youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   title: "Showreel 2024"
 };
+const DEFAULT_METRICS = {
+  projects: "50+",
+  clients: "30+",
+  views: "5M+",
+  years: "3"
+};
+const DEFAULT_CLIENT_LOGOS = [
+  { id: 1, name: "Kiwoom Sekuritas Indonesia", src: "" },
+  { id: 2, name: "Klien A", src: "" },
+  { id: 3, name: "Klien B", src: "" },
+  { id: 4, name: "Triple AAA Internal", src: "" }
+];
 
 function loadVideos() {
   try {
@@ -713,8 +792,32 @@ function saveMainToStorage(data) {
   localStorage.setItem('tripleaaa_main_video', JSON.stringify(data));
 }
 
+function loadMetrics() {
+  try {
+    const saved = localStorage.getItem('tripleaaa_metrics');
+    return saved ? { ...DEFAULT_METRICS, ...JSON.parse(saved) } : { ...DEFAULT_METRICS };
+  } catch(e) { return { ...DEFAULT_METRICS }; }
+}
+
+function saveMetricsToStorage(data) {
+  localStorage.setItem('tripleaaa_metrics', JSON.stringify(data));
+}
+
+function loadClientLogos() {
+  try {
+    const saved = localStorage.getItem('tripleaaa_client_logos');
+    return saved ? JSON.parse(saved) : [...DEFAULT_CLIENT_LOGOS];
+  } catch(e) { return [...DEFAULT_CLIENT_LOGOS]; }
+}
+
+function saveClientLogosToStorage(data) {
+  localStorage.setItem('tripleaaa_client_logos', JSON.stringify(data));
+}
+
 let videoData = loadVideos();
 let mainVideoData = loadMainVideo();
+let metricData = loadMetrics();
+let clientLogoData = loadClientLogos();
 let editingId = null;
 
 // ==========================================
@@ -763,7 +866,11 @@ function showPage(id, btn) {
   resetBtn.style.display = id === 'videos' ? '' : 'none';
   if (id === 'hero') renderMainVideoSettings();
   if (id === 'preview') renderPreview();
-  if (id === 'settings') document.getElementById('storageInfo').textContent = videoData.length + ' video + 1 hero';
+  if (id === 'settings') {
+    renderMetricsSettings();
+    renderClientLogoList();
+    updateStorageInfo();
+  }
 }
 
 // ==========================================
@@ -928,6 +1035,90 @@ function resetMainVideo() {
   showToast('Video hero direset ke default.');
 }
 
+function renderMetricsSettings() {
+  metricData = loadMetrics();
+  document.getElementById('metricProjects').value = metricData.projects || '';
+  document.getElementById('metricClients').value = metricData.clients || '';
+  document.getElementById('metricViews').value = metricData.views || '';
+  document.getElementById('metricYears').value = metricData.years || '';
+}
+
+function saveMetrics() {
+  metricData = {
+    projects: document.getElementById('metricProjects').value.trim() || DEFAULT_METRICS.projects,
+    clients: document.getElementById('metricClients').value.trim() || DEFAULT_METRICS.clients,
+    views: document.getElementById('metricViews').value.trim() || DEFAULT_METRICS.views,
+    years: document.getElementById('metricYears').value.trim() || DEFAULT_METRICS.years
+  };
+  saveMetricsToStorage(metricData);
+  updateStorageInfo();
+  showToast('Angka website berhasil disimpan!');
+}
+
+function updateStorageInfo() {
+  const info = document.getElementById('storageInfo');
+  if (info) info.textContent = videoData.length + ' video + ' + clientLogoData.length + ' logo + 1 hero';
+}
+
+function renderClientLogoList() {
+  clientLogoData = loadClientLogos();
+  const list = document.getElementById('clientLogoList');
+  const empty = document.getElementById('clientLogoEmpty');
+  if (!list || !empty) return;
+  if (!clientLogoData.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = clientLogoData.map(logo => {
+    const preview = logo.src
+      ? `<img src="${escapeHTML(logo.src)}" alt="${escapeHTML(logo.name)} logo"/>`
+      : `<div class="client-logo-fallback">${escapeHTML(logo.name)}</div>`;
+    return `
+      <div class="client-logo-item">
+        <div class="client-logo-preview">${preview}</div>
+        <div class="client-logo-meta">
+          <div class="client-logo-name">${escapeHTML(logo.name)}</div>
+          <button class="tbl-action del" onclick="deleteClientLogo(${logo.id})">Hapus</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function addClientLogo() {
+  const name = document.getElementById('clientLogoName').value.trim();
+  const fileInput = document.getElementById('clientLogoFile');
+  const file = fileInput.files && fileInput.files[0];
+  if (!name) { alert('Nama klien wajib diisi!'); return; }
+  if (!file) { alert('Upload logo SVG atau PNG dulu!'); return; }
+  if (!['image/svg+xml','image/png'].includes(file.type) && !/\.(svg|png)$/i.test(file.name)) {
+    alert('Format logo harus SVG atau PNG.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    clientLogoData.push({ id: Date.now(), name, src: reader.result });
+    saveClientLogosToStorage(clientLogoData);
+    document.getElementById('clientLogoName').value = '';
+    fileInput.value = '';
+    renderClientLogoList();
+    updateStorageInfo();
+    showToast('Logo klien berhasil ditambahkan!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function deleteClientLogo(id) {
+  if (!confirm('Hapus logo klien ini?')) return;
+  clientLogoData = clientLogoData.filter(logo => logo.id !== id);
+  saveClientLogosToStorage(clientLogoData);
+  renderClientLogoList();
+  updateStorageInfo();
+  showToast('Logo klien dihapus.');
+}
+
 function saveVideo() {
   const title = document.getElementById('fTitle').value.trim();
   const client = document.getElementById('fClient').value.trim();
@@ -982,6 +1173,8 @@ function clearAll() {
 function exportVideosJson() {
   const data = {
     mainVideo: loadMainVideo(),
+    metrics: loadMetrics(),
+    clientLogos: loadClientLogos(),
     videos: videoData
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

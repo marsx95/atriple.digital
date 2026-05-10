@@ -3,6 +3,34 @@
     "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "title": "Showreel 2024"
   },
+  "metrics": {
+    "projects": "50+",
+    "clients": "30+",
+    "views": "5M+",
+    "years": "3"
+  },
+  "clientLogos": [
+    {
+      "id": 1,
+      "name": "Kiwoom Sekuritas Indonesia",
+      "src": ""
+    },
+    {
+      "id": 2,
+      "name": "Klien A",
+      "src": ""
+    },
+    {
+      "id": 3,
+      "name": "Klien B",
+      "src": ""
+    },
+    {
+      "id": 4,
+      "name": "Triple AAA Internal",
+      "src": ""
+    }
+  ],
   "videos": [
     {
       "id": 1,
