@@ -177,19 +177,27 @@
 
     /* VIDEO MODAL */
     body.modal-open { overflow:hidden; }
-    .video-modal { position:fixed;inset:0;z-index:900;display:grid;place-items:center;padding:32px;background:rgba(0,0,0,.82);backdrop-filter:blur(22px);opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s ease; }
+    .video-modal { position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.82);backdrop-filter:blur(22px);opacity:0;visibility:hidden;overflow:hidden;transition:opacity .24s ease,visibility .24s ease; }
     .video-modal.active { opacity:1;visibility:visible; }
-    .video-modal-shell { position:relative;width:min(1120px,100%);max-height:calc(100vh - 64px);display:grid;grid-template-columns:minmax(0,1fr) 340px;background:#0f0f0f;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-card);overflow:hidden;box-shadow:0 32px 90px rgba(0,0,0,.74),0 0 80px rgba(255,208,0,.08);transform:translateY(16px) scale(.98);transition:transform .24s ease; }
-    .video-modal.active .video-modal-shell { transform:translateY(0) scale(1); }
-    .video-modal-player { position:relative;background:#000;aspect-ratio:16/9;min-height:360px;align-self:center; }
-    .video-modal-player iframe { width:100%;height:100%;border:0;display:block; }
-    .video-modal-info { padding:34px 30px;display:flex;flex-direction:column;justify-content:center;gap:16px;background:linear-gradient(180deg,#171717,#101010);border-left:1px solid rgba(255,255,255,.08); }
+    .video-modal-track { height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth;scroll-padding:72px 0;display:flex;flex-direction:column;gap:72px;padding:72px 112px 72px 56px; }
+    .video-modal-track::-webkit-scrollbar { width:0; }
+    .video-modal-item { min-height:calc(100svh - 144px);display:grid;place-items:center;scroll-snap-align:center;scroll-snap-stop:always; }
+    .video-modal-shell { position:relative;width:min(1180px,100%);display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:24px;padding:26px;background:rgba(18,18,18,.9);border:1px solid rgba(255,255,255,.1);border-radius:28px;overflow:hidden;box-shadow:0 32px 90px rgba(0,0,0,.74),0 0 80px rgba(255,208,0,.08);transform:translateY(28px) scale(.97);opacity:.58;transition:transform .45s cubic-bezier(.22,1,.36,1),opacity .45s ease; }
+    .video-modal.active .video-modal-item.is-active .video-modal-shell { transform:translateY(0) scale(1);opacity:1; }
+    .video-modal-player { position:relative;background:#000;aspect-ratio:16/9;min-height:360px;align-self:start;border-radius:18px;overflow:hidden; }
+    .video-modal-player iframe,.video-modal-player img { width:100%;height:100%;border:0;display:block;object-fit:cover; }
+    .video-modal-info { min-height:100%;padding:26px 24px;display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:16px;background:linear-gradient(180deg,#1a1a1a,#101010);border:1px solid rgba(255,255,255,.08);border-radius:18px; }
     .video-modal-category { width:max-content;max-width:100%;background:rgba(255,208,0,.1);border:1px solid rgba(255,208,0,.24);color:var(--yellow);border-radius:var(--r-pill);padding:7px 12px;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase; }
     .video-modal-title { font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:.98;letter-spacing:1.5px;overflow-wrap:anywhere; }
     .video-modal-caption { font-size:14px;line-height:1.75;color:rgba(255,255,255,.56); }
     .video-modal-client { font-size:12px;color:rgba(255,255,255,.34); }
-    .video-modal-close { position:absolute;top:22px;right:22px;z-index:2;width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:50%;background:rgba(18,18,18,.78);color:var(--white);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,transform .2s,border-color .2s; }
-    .video-modal-close:hover { background:var(--yellow);color:var(--black);border-color:var(--yellow);transform:scale(1.06); }
+    .video-modal-close { position:absolute;top:28px;right:28px;z-index:5;width:42px;height:42px;border:0;border-radius:0;background:transparent;color:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:color .2s,transform .2s; }
+    .video-modal-close::before,.video-modal-close::after { content:'';position:absolute;width:24px;height:2px;background:currentColor;border-radius:2px;transform:rotate(45deg);transition:background .2s; }
+    .video-modal-close::after { transform:rotate(135deg); }
+    .video-modal-close:hover { color:var(--yellow);transform:scale(1.08) rotate(90deg); }
+    .video-modal-dots { position:absolute;right:34px;top:50%;z-index:5;display:flex;flex-direction:column;gap:10px;transform:translateY(-50%); }
+    .video-modal-dot { width:7px;height:7px;border:0;border-radius:50%;background:rgba(255,255,255,.28);cursor:pointer;padding:0;transition:height .2s,background .2s,opacity .2s; }
+    .video-modal-dot.active { height:22px;background:var(--yellow);border-radius:999px; }
     .video-modal-mobile-info { display:none; }
 
     /* ABOUT */
@@ -261,8 +269,10 @@
       .hero h1 { font-size:58px; }
       .hero-actions { flex-direction:column;align-items:center; }
       .portfolio-header { flex-direction:column;align-items:flex-start;gap:20px; }
-      .video-modal { padding:0;background:#000;place-items:stretch; }
-      .video-modal-shell { width:100%;height:100%;max-height:none;display:block;border:0;border-radius:0;background:#000;box-shadow:none; }
+      .video-modal { background:#000; }
+      .video-modal-track { gap:0;padding:0;scroll-padding:0; }
+      .video-modal-item { min-height:100svh;place-items:stretch; }
+      .video-modal-shell { width:100%;height:100svh;display:block;border:0;border-radius:0;background:#000;box-shadow:none;padding:0; }
       .video-modal-player { width:100%;height:100%;min-height:0;aspect-ratio:auto;display:flex;align-items:center;justify-content:center;overflow:hidden; }
       .video-modal-player iframe { width:100%;height:100%;max-width:56.25vh;max-height:100%;aspect-ratio:9/16;background:#000; }
       .video-modal-info { display:none; }
@@ -270,7 +280,8 @@
       .video-modal-mobile-info .video-modal-category { background:rgba(255,208,0,.16);backdrop-filter:blur(10px); }
       .video-modal-mobile-info .video-modal-title { font-size:30px;max-width:86%; }
       .video-modal-mobile-info .video-modal-caption { font-size:13px;line-height:1.55;max-width:92%;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden; }
-      .video-modal-close { top:14px;right:14px;background:rgba(0,0,0,.52);backdrop-filter:blur(10px); }
+      .video-modal-close { top:14px;right:14px;width:40px;height:40px;background:transparent;backdrop-filter:none; }
+      .video-modal-dots { right:14px; }
     }
   </style>
 </head>
@@ -378,22 +389,9 @@
 </section>
 
 <div class="video-modal" id="videoModal" aria-hidden="true" onclick="handleModalBackdrop(event)">
-  <button class="video-modal-close" type="button" aria-label="Tutup video" onclick="closeVideoModal()">x</button>
-  <div class="video-modal-shell" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
-    <div class="video-modal-player" id="videoModalPlayer"></div>
-    <div class="video-modal-info">
-      <div class="video-modal-category" id="videoModalCategory"></div>
-      <div class="video-modal-title" id="videoModalTitle"></div>
-      <p class="video-modal-caption" id="videoModalCaption"></p>
-      <div class="video-modal-client" id="videoModalClient"></div>
-    </div>
-    <div class="video-modal-mobile-info">
-      <div class="video-modal-category" id="videoModalMobileCategory"></div>
-      <div class="video-modal-title" id="videoModalMobileTitle"></div>
-      <p class="video-modal-caption" id="videoModalMobileCaption"></p>
-      <div class="video-modal-client" id="videoModalMobileClient"></div>
-    </div>
-  </div>
+  <button class="video-modal-close" type="button" aria-label="Tutup video" onclick="closeVideoModal()"></button>
+  <div class="video-modal-track" id="videoModalTrack"></div>
+  <div class="video-modal-dots" id="videoModalDots" aria-label="Navigasi portfolio"></div>
 </div>
 
 <!-- ABOUT -->
@@ -512,9 +510,17 @@ function playHeroVideo(){
 }
 
 let activeFilter='all';
+let activeModalIndex=0;
+let modalScrollAnimation=null;
+let modalScrollRaf=null;
+
+function getFilteredVideos(){
+  return activeFilter==='all'?videoData:videoData.filter(v=>v.category===activeFilter);
+}
+
 function renderVideos(){
   const grid=document.getElementById('videoGrid');
-  const filtered=activeFilter==='all'?videoData:videoData.filter(v=>v.category===activeFilter);
+  const filtered=getFilteredVideos();
   if(!filtered.length){grid.innerHTML=`<p style="color:rgba(255,255,255,.22);font-size:14px;grid-column:1/-1;padding:48px 0;text-align:center">Belum ada video untuk kategori ini.</p>`;return;}
   grid.innerHTML=filtered.map(v=>{
     const thumb=getThumbnail(v.youtubeUrl),safeId=escapeHTML(v.id);
@@ -540,26 +546,121 @@ function setText(id,value){
 }
 
 function openVideoModal(id){
-  const video=videoData.find(v=>String(v.id)===String(id));
-  if(!video)return;
-  const embed=getEmbedUrl(video.youtubeUrl);
-  if(!embed)return;
+  const videos=getFilteredVideos();
+  const startIndex=Math.max(0,videos.findIndex(v=>String(v.id)===String(id)));
+  if(!videos.length)return;
   const modal=document.getElementById('videoModal');
-  const player=document.getElementById('videoModalPlayer');
-  const caption=video.caption||DEFAULT_CAPTIONS[String(video.id)]||`Project ${video.category||'video'} untuk ${video.client||'klien'} dari Triple AAA Agency.`;
-  player.innerHTML=`<iframe src="${embed}" title="${escapeHTML(video.title)}" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen></iframe>`;
-  setText('videoModalCategory',video.category);
-  setText('videoModalTitle',video.title);
-  setText('videoModalCaption',caption);
-  setText('videoModalClient',video.client?`Client: ${video.client}`:'');
-  setText('videoModalMobileCategory',video.category);
-  setText('videoModalMobileTitle',video.title);
-  setText('videoModalMobileCaption',caption);
-  setText('videoModalMobileClient',video.client?`Client: ${video.client}`:'');
+  renderVideoModal(videos);
   modal.classList.add('active');
   modal.setAttribute('aria-hidden','false');
   document.body.classList.add('modal-open');
+  setActiveModalVideo(startIndex);
+  requestAnimationFrame(()=>{
+    scrollModalTo(startIndex,false);
+  });
   document.querySelector('.video-modal-close').focus();
+}
+
+function renderVideoModal(videos){
+  const track=document.getElementById('videoModalTrack');
+  const dots=document.getElementById('videoModalDots');
+  track.innerHTML=videos.map((video,index)=>{
+    const caption=video.caption||DEFAULT_CAPTIONS[String(video.id)]||`Project ${video.category||'video'} untuk ${video.client||'klien'} dari Triple AAA Agency.`;
+    return`<article class="video-modal-item" data-index="${index}" data-video-id="${escapeHTML(video.id)}" data-youtube-url="${escapeHTML(video.youtubeUrl)}">
+      <div class="video-modal-shell" role="dialog" aria-modal="true" aria-labelledby="video-modal-title-${index}">
+        <div class="video-modal-player" data-player-index="${index}">
+          <img src="${escapeHTML(getThumbnail(video.youtubeUrl))}" alt="${escapeHTML(video.title)}" loading="lazy"/>
+        </div>
+        <div class="video-modal-info">
+          <div class="video-modal-category">${escapeHTML(video.category)}</div>
+          <div class="video-modal-title" id="video-modal-title-${index}">${escapeHTML(video.title)}</div>
+          <p class="video-modal-caption">${escapeHTML(caption)}</p>
+          <div class="video-modal-client">${video.client?`Client: ${escapeHTML(video.client)}`:''}</div>
+        </div>
+        <div class="video-modal-mobile-info">
+          <div class="video-modal-category">${escapeHTML(video.category)}</div>
+          <div class="video-modal-title">${escapeHTML(video.title)}</div>
+          <p class="video-modal-caption">${escapeHTML(caption)}</p>
+          <div class="video-modal-client">${video.client?`Client: ${escapeHTML(video.client)}`:''}</div>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+  dots.innerHTML=videos.map((_,index)=>`<button class="video-modal-dot" type="button" aria-label="Portfolio ${index+1}" onclick="scrollModalTo(${index})"></button>`).join('');
+  addInteractiveCursor();
+}
+
+function scrollModalTo(index,animate=true){
+  const item=document.querySelector(`.video-modal-item[data-index="${index}"]`);
+  const track=document.getElementById('videoModalTrack');
+  if(!item||!track)return;
+  const target=item.offsetTop-(track.clientHeight-item.offsetHeight)/2;
+  if(animate){
+    animateModalScroll(track,target);
+  }else{
+    track.scrollTop=target;
+    updateModalActiveFromScroll();
+  }
+}
+
+function animateModalScroll(track,target){
+  if(modalScrollAnimation)cancelAnimationFrame(modalScrollAnimation);
+  const start=track.scrollTop;
+  const distance=target-start;
+  const duration=760;
+  const startTime=performance.now();
+  const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  function step(now){
+    const progress=Math.min(1,(now-startTime)/duration);
+    track.scrollTop=start+(distance*ease(progress));
+    updateModalActiveFromScroll();
+    if(progress<1){
+      modalScrollAnimation=requestAnimationFrame(step);
+    }else{
+      modalScrollAnimation=null;
+    }
+  }
+  modalScrollAnimation=requestAnimationFrame(step);
+}
+
+function setActiveModalVideo(index){
+  const items=[...document.querySelectorAll('.video-modal-item')];
+  if(!items.length)return;
+  activeModalIndex=Math.max(0,Math.min(index,items.length-1));
+  items.forEach((item,itemIndex)=>{
+    item.classList.toggle('is-active',itemIndex===activeModalIndex);
+    const player=item.querySelector('.video-modal-player');
+    if(itemIndex===activeModalIndex){
+      const embed=getEmbedUrl(item.dataset.youtubeUrl);
+      if(embed&&!player.querySelector('iframe')){
+        const title=item.querySelector('.video-modal-title')?.textContent||'Portfolio video';
+        player.innerHTML=`<iframe src="${embed}" title="${escapeHTML(title)}" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen></iframe>`;
+      }
+    }else if(player.querySelector('iframe')){
+      const video=videoData.find(v=>String(v.id)===String(item.dataset.videoId));
+      player.innerHTML=`<img src="${escapeHTML(getThumbnail(item.dataset.youtubeUrl))}" alt="${escapeHTML(video?.title||'Portfolio video')}" loading="lazy"/>`;
+    }
+  });
+  document.querySelectorAll('.video-modal-dot').forEach((dot,dotIndex)=>dot.classList.toggle('active',dotIndex===activeModalIndex));
+}
+
+function updateModalActiveFromScroll(){
+  const modal=document.getElementById('videoModal');
+  if(!modal.classList.contains('active'))return;
+  const track=document.getElementById('videoModalTrack');
+  const trackRect=track.getBoundingClientRect();
+  const center=trackRect.top+(trackRect.height/2);
+  let nearestIndex=activeModalIndex;
+  let nearestDistance=Infinity;
+  document.querySelectorAll('.video-modal-item').forEach(item=>{
+    const rect=item.getBoundingClientRect();
+    const distance=Math.abs((rect.top+rect.height/2)-center);
+    if(distance<nearestDistance){
+      nearestDistance=distance;
+      nearestIndex=Number(item.dataset.index);
+    }
+  });
+  if(nearestIndex!==activeModalIndex)setActiveModalVideo(nearestIndex);
 }
 
 function closeVideoModal(){
@@ -567,7 +668,9 @@ function closeVideoModal(){
   modal.classList.remove('active');
   modal.setAttribute('aria-hidden','true');
   document.body.classList.remove('modal-open');
-  document.getElementById('videoModalPlayer').innerHTML='';
+  document.getElementById('videoModalTrack').innerHTML='';
+  document.getElementById('videoModalDots').innerHTML='';
+  document.getElementById('videoModalTrack').scrollTop=0;
 }
 
 function handleModalBackdrop(event){
@@ -605,6 +708,13 @@ function addInteractiveCursor(){
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&document.getElementById('videoModal').classList.contains('active'))closeVideoModal();
 });
+document.getElementById('videoModalTrack').addEventListener('scroll',()=>{
+  if(modalScrollRaf)return;
+  modalScrollRaf=requestAnimationFrame(()=>{
+    modalScrollRaf=null;
+    updateModalActiveFromScroll();
+  });
+},{passive:true});
 
 initHeroVideo();
 renderVideos();
