@@ -50,7 +50,7 @@
     ]
   }
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Changa+One&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --black: #0a0a0a;
@@ -75,8 +75,8 @@
     /* NAV */
     nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:rgba(10,10,10,.8);backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.06); }
     .nav-logo { display:flex;align-items:center;gap:10px;text-decoration:none; }
-    .nav-logo svg { width:30px;height:30px; }
-    .nav-logo-text { font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:3px;color:var(--white); }
+    .brand-logo-img { width:30px;height:30px;object-fit:contain;display:block; }
+    .nav-logo-text { font-family:'Changa One',sans-serif;font-size:18px;letter-spacing:1.5px;text-transform:uppercase;color:var(--white); }
     .nav-links { display:flex;gap:32px; }
     .nav-links a { color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s; }
     .nav-links a:hover { color:var(--white); }
@@ -196,7 +196,7 @@
     .about-inner { display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center; }
     .about-logo-wrap { width:100%;aspect-ratio:1;background:var(--yellow);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden; }
     .about-logo-wrap::before { content:'TRIPLE AAA';position:absolute;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:12px;color:rgba(0,0,0,.07);white-space:nowrap;transform:rotate(-15deg);width:200%;text-align:center; }
-    .about-logo-wrap svg { width:175px;height:175px; }
+    .about-logo-img { width:175px;height:175px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 14px 30px rgba(0,0,0,.22)); }
     .about-tag { position:absolute;bottom:-14px;right:-14px;background:var(--black);border:2px solid var(--yellow);border-radius:var(--r-sm);padding:18px 24px; }
     .about-tag .num { font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--yellow);line-height:1; }
     .about-tag .txt { font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px; }
@@ -228,8 +228,8 @@
     /* FOOTER */
     footer { background:var(--black);border-top:1px solid rgba(255,255,255,.05);padding:44px 48px;display:flex;justify-content:space-between;align-items:center; }
     .footer-logo { display:flex;align-items:center;gap:10px; }
-    .footer-logo svg { width:26px;height:26px; }
-    .footer-logo-text { font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px; }
+    .footer-logo .brand-logo-img { width:26px;height:26px; }
+    .footer-logo-text { font-family:'Changa One',sans-serif;font-size:16px;letter-spacing:1.4px;text-transform:uppercase; }
     footer p { font-size:12px;color:rgba(255,255,255,.22); }
     .footer-links { display:flex;gap:24px; }
     .footer-links a { font-size:12px;color:rgba(255,255,255,.22);text-decoration:none;transition:color .2s; }
@@ -282,7 +282,7 @@
 <!-- NAV -->
 <nav>
   <a href="#" class="nav-logo">
-    <svg viewBox="0 0 100 100" fill="none"><path d="M50 5C50 5 58 38 62 44C68 50 95 50 95 50C95 50 68 50 62 56C58 62 50 95 50 95C50 95 42 62 38 56C32 50 5 50 5 50C5 50 32 50 38 44C42 38 50 5 50 5Z" fill="#FFD000"/><polygon points="50,32 56,42 44,42" fill="#0a0a0a"/><polygon points="50,68 56,58 44,58" fill="#0a0a0a"/></svg>
+    <img class="brand-logo-img" src="tripleA-yellow-512px.svg" alt="Triple AAA logo"/>
     <span class="nav-logo-text">TRIPLE AAA</span>
   </a>
   <div class="nav-links">
@@ -401,7 +401,7 @@
   <div class="about-inner">
     <div style="position:relative">
       <div class="about-logo-wrap">
-        <svg viewBox="0 0 100 100" fill="none"><path d="M50 5C50 5 58 38 62 44C68 50 95 50 95 50C95 50 68 50 62 56C58 62 50 95 50 95C50 95 42 62 38 56C32 50 5 50 5 50C5 50 32 50 38 44C42 38 50 5 50 5Z" fill="#0a0a0a"/><polygon points="50,32 56,42 44,42" fill="#FFD000"/><polygon points="50,68 56,58 44,58" fill="#FFD000"/></svg>
+        <img class="about-logo-img" src="tripleA-yellow-512px.svg" alt="Triple AAA logo"/>
       </div>
       <div class="about-tag"><div class="num">AAA</div><div class="txt">Triple Standard</div></div>
     </div>
@@ -456,7 +456,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
-    <svg viewBox="0 0 100 100" fill="none"><path d="M50 5C50 5 58 38 62 44C68 50 95 50 95 50C95 50 68 50 62 56C58 62 50 95 50 95C50 95 42 62 38 56C32 50 5 50 5 50C5 50 32 50 38 44C42 38 50 5 50 5Z" fill="#FFD000"/><polygon points="50,32 56,42 44,42" fill="#0a0a0a"/><polygon points="50,68 56,58 44,58" fill="#0a0a0a"/></svg>
+    <img class="brand-logo-img" src="tripleA-yellow-512px.svg" alt="Triple AAA logo"/>
     <span class="footer-logo-text">TRIPLE AAA</span>
   </div>
   <p>© 2025 Triple AAA Agency. All rights reserved.</p>
