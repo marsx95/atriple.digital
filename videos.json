@@ -34,25 +34,35 @@
   "videos": [
     {
       "id": 1,
-      "title": "Level up promotion 2025",
-      "client": "Kiwoom Sekuritas Indonesia",
-      "category": "Commercial",
+      "title": "Brand Story — Contoh Klien 1",
+      "client": "Klien A",
+      "category": "Branded Content",
       "youtubeUrl": "https://www.youtube.com/watch?v=w2siO0lxnOA",
-      "caption": "Video promotion buat PT Kiwoom Sekuritas Indonesia untuk campaign promosi digital."
+      "caption": "Video branded content untuk membangun kedekatan audiens dengan brand melalui narasi visual yang kuat."
     },
     {
       "id": 2,
       "title": "Commercial 30s — Contoh Klien 2",
       "client": "Klien B",
       "category": "Commercial",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "caption": "Video commercial berdurasi singkat untuk kebutuhan campaign digital dan social media placement."
     },
     {
       "id": 3,
       "title": "Motion Reel 2024",
       "client": "Internal",
       "category": "Motion Graphic",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "caption": "Kompilasi motion graphic, title treatment, dan visual system untuk komunikasi brand."
+    },
+    {
+      "id": 1778499297252,
+      "title": "Switch To Hero",
+      "client": "PT Kiwoom Sekuritas Indonesia",
+      "category": "Motion Graphic",
+      "youtubeUrl": "https://www.youtube.com/watch?v=VT-iiwKRF5s",
+      "caption": "Sebuah motion video yang menargetkan investor muda diawal tahun 2026"
     }
   ]
 }
