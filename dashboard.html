@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Triple AAA Agency</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --yellow: #FFD000;
+      --yellow-dark: #e6bc00;
+      --yellow-dim: rgba(255,208,0,0.08);
+      --white: #ffffff;
+      --gray: #111111;
+      --gray2: #1a1a1a;
+      --border: rgba(255,255,255,0.07);
+      --sidebar: 260px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      display: flex; min-height: 100vh;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar);
+      background: var(--gray);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 50;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 12px;
+      padding: 28px 24px;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+    }
+    .sidebar-logo svg { width: 32px; height: 32px; flex-shrink: 0; }
+    .sidebar-logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px; letter-spacing: 3px; color: var(--white);
+    }
+    .sidebar-logo-sub {
+      font-size: 9px; color: rgba(255,255,255,0.3);
+      letter-spacing: 2px; text-transform: uppercase;
+      display: block; margin-top: -2px;
+    }
+    .sidebar-nav { padding: 20px 12px; flex: 1; }
+    .nav-group-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(255,255,255,0.25);
+      padding: 0 12px; margin-bottom: 8px; margin-top: 20px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 4px;
+      color: rgba(255,255,255,0.5);
+      font-size: 13px; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      transition: all 0.2s; margin-bottom: 2px;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .nav-item.active {
+      background: var(--yellow-dim);
+      color: var(--yellow);
+      border-left: 2px solid var(--yellow);
+    }
+    .nav-item .icon { width: 18px; text-align: center; font-size: 15px; }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--yellow); color: var(--black);
+      font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 10px;
+    }
+    .sidebar-footer {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .sidebar-visit {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--yellow); color: var(--black);
+      padding: 11px 16px; border-radius: 4px;
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .sidebar-visit:hover { background: var(--yellow-dark); }
+    .sidebar-user {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .user-avatar {
+      width: 32px; height: 32px;
+      background: var(--yellow-dim); border: 1px solid rgba(255,208,0,0.3);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--yellow); font-weight: 700;
+    }
+    .user-name { font-size: 12px; color: rgba(255,255,255,0.6); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
+
+    /* ===== MAIN ===== */
+    .main {
+      margin-left: var(--sidebar);
+      flex: 1; display: flex; flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,10,0.8);
+      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 40;
+    }
+    .topbar-left { display: flex; flex-direction: column; }
+    .topbar-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; letter-spacing: 2px; line-height: 1;
+    }
+    .topbar-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 20px; border-radius: 4px;
+      font-size: 12px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+      border: none;
+    }
+    .btn-outline {
+      background: none; border: 1px solid var(--border); color: rgba(255,255,255,0.5);
+    }
+    .btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
+    .btn-primary {
+      background: var(--yellow); color: var(--black);
+    }
+    .btn-primary:hover { background: var(--yellow-dark); }
+
+    /* PAGE CONTENT */
+    .page { padding: 40px; display: none; }
+    .page.active { display: block; }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 16px; margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--gray); border: 1px solid var(--border);
+      border-radius: 6px; padding: 24px;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: rgba(255,208,0,0.2); }
+    .stat-card-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(255,255,255,0.4);
+      margin-bottom: 12px;
+    }
+    .stat-card-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px; color: var(--yellow); line-height: 1;
+    }
+    .stat-card-delta {
+      font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 4px;
+    }
+
+    /* SECTION CARD */
+    .section-card {
+      background: var(--gray); border: 1px solid var(--border);
+      border-radius: 6px; margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .section-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 1px;
+    }
+    .section-card-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+    .section-card-body { padding: 28px; }
+
+    /* VIDEO TABLE */
+    .video-table { width: 100%; border-collapse: collapse; }
+    .video-table th {
+      text-align: left; padding: 10px 16px;
+      font-size: 10px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(255,255,255,0.3);
+      border-bottom: 1px solid var(--border);
+    }
+    .video-table td {
+      padding: 14px 16px; font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    .video-table tr:last-child td { border-bottom: none; }
+    .video-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .video-thumb-mini {
+      width: 80px; height: 45px;
+      background: #222; border-radius: 3px;
+      object-fit: cover; display: block;
+    }
+    .cat-badge {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .cat-Branded\ Content  { background: rgba(255,208,0,0.12); color: var(--yellow); }
+    .cat-Commercial        { background: rgba(100,180,255,0.12); color: #64b4ff; }
+    .cat-Motion\ Graphic   { background: rgba(180,100,255,0.12); color: #b464ff; }
+    .cat-Corporate         { background: rgba(100,255,180,0.12); color: #64ffb4; }
+    .cat-Social\ Media     { background: rgba(255,130,100,0.12); color: #ff8264; }
+    .tbl-action {
+      background: none; border: 1px solid var(--border); color: rgba(255,255,255,0.4);
+      padding: 6px 12px; border-radius: 3px; font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; margin-right: 4px;
+    }
+    .tbl-action:hover { border-color: var(--yellow); color: var(--yellow); }
+    .tbl-action.del:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+    /* FORM (add/edit modal) */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--gray);
+      border: 1px solid rgba(255,208,0,0.2);
+      border-radius: 8px;
+      width: 560px; max-width: 95vw;
+      padding: 36px;
+      animation: modalIn 0.25s ease both;
+    }
+    @keyframes modalIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; letter-spacing: 2px; color: var(--yellow);
+      margin-bottom: 4px;
+    }
+    .modal-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 8px; display: block; }
+    .form-input, .form-select {
+      width: 100%; background: var(--black);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); padding: 12px 16px;
+      border-radius: 4px; font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--yellow); }
+    .form-select option { background: #1a1a1a; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .modal-actions { display: flex; gap: 12px; margin-top: 28px; justify-content: flex-end; }
+    .modal-cancel {
+      background: none; border: 1px solid var(--border);
+      color: rgba(255,255,255,0.4); padding: 11px 24px;
+      border-radius: 4px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .modal-cancel:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
+    .modal-save {
+      background: var(--yellow); color: var(--black);
+      border: none; padding: 11px 28px; border-radius: 4px;
+      font-size: 13px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; cursor: pointer; transition: background 0.2s;
+    }
+    .modal-save:hover { background: var(--yellow-dark); }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 32px; right: 32px;
+      background: var(--gray); border: 1px solid rgba(255,208,0,0.3);
+      color: var(--white);
+      padding: 14px 22px; border-radius: 6px;
+      font-size: 13px; display: flex; align-items: center; gap: 10px;
+      z-index: 300;
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-icon { color: var(--yellow); font-size: 16px; }
+
+    /* PREVIEW GRID */
+    .preview-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;
+    }
+    .preview-card {
+      background: var(--black); border: 1px solid var(--border);
+      border-radius: 4px; overflow: hidden;
+    }
+    .preview-thumb {
+      width: 100%; aspect-ratio: 16/9;
+      object-fit: cover; display: block;
+      background: #1a1a1a;
+    }
+    .preview-info { padding: 12px 14px; }
+    .preview-cat { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--yellow); margin-bottom: 4px; }
+    .preview-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center; padding: 60px 40px;
+      color: rgba(255,255,255,0.3);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
+
+    /* SETTINGS */
+    .settings-group { margin-bottom: 32px; }
+    .settings-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(255,255,255,0.4);
+      margin-bottom: 16px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-label { font-size: 14px; }
+    .settings-row-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo-text, .sidebar-logo-sub, .nav-item span, .nav-badge, .sidebar-footer .sidebar-visit span, .sidebar-user { display: none; }
+      .main { margin-left: 60px; }
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .preview-grid { grid-template-columns: repeat(2,1fr); }
+      .topbar { padding: 16px 20px; }
+      .page { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 5 C50 5 58 38 62 44 C68 50 95 50 95 50 C95 50 68 50 62 56 C58 62 50 95 50 95 C50 95 42 62 38 56 C32 50 5 50 5 50 C5 50 32 50 38 44 C42 38 50 5 50 5Z" fill="#FFD000"/>
+      <polygon points="50,32 56,42 44,42" fill="#0a0a0a"/>
+      <polygon points="50,68 56,58 44,58" fill="#0a0a0a"/>
+    </svg>
+    <div>
+      <span class="sidebar-logo-text">TRIPLE AAA</span>
+      <span class="sidebar-logo-sub">Dashboard</span>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Menu</div>
+    <button class="nav-item active" onclick="showPage('videos', this)">
+      <span class="icon">▶</span>
+      <span>Video Portfolio</span>
+      <span class="nav-badge" id="videoBadge">0</span>
+    </button>
+    <button class="nav-item" onclick="showPage('hero', this)">
+      <span class="icon">★</span>
+      <span>Video Hero</span>
+    </button>
+    <button class="nav-item" onclick="showPage('preview', this)">
+      <span class="icon">◻</span>
+      <span>Preview</span>
+    </button>
+
+    <div class="nav-group-label">Pengaturan</div>
+    <button class="nav-item" onclick="showPage('settings', this)">
+      <span class="icon">⚙</span>
+      <span>Pengaturan</span>
+    </button>
+    <a href="index.html" class="nav-item" target="_blank">
+      <span class="icon">↗</span>
+      <span>Lihat Website</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="index.html" class="sidebar-visit" target="_blank">
+      <span>↗</span> <span>Buka Website</span>
+    </a>
+    <div class="sidebar-user">
+      <div class="user-avatar">A</div>
+      <div>
+        <div class="user-name">Admin</div>
+        <div class="user-role">Triple AAA</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="pageTitle">VIDEO PORTFOLIO</div>
+      <div class="topbar-sub" id="pageSub">Kelola video yang ditampilkan di website</div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn btn-outline" onclick="resetData()">↺ Reset Default</button>
+      <button class="topbar-btn btn-primary" onclick="openModal()">+ Tambah Video</button>
+    </div>
+  </div>
+
+  <!-- PAGE: VIDEOS -->
+  <div class="page active" id="page-videos">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-label">Total Video</div>
+        <div class="stat-card-num" id="statTotal">0</div>
+        <div class="stat-card-delta">dalam portfolio</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Branded Content</div>
+        <div class="stat-card-num" id="statBranded">0</div>
+        <div class="stat-card-delta">video</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Commercial</div>
+        <div class="stat-card-num" id="statCommercial">0</div>
+        <div class="stat-card-delta">video</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Lainnya</div>
+        <div class="stat-card-num" id="statOther">0</div>
+        <div class="stat-card-delta">video</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div>
+          <div class="section-card-title">DAFTAR VIDEO</div>
+          <div class="section-card-sub">Klik edit untuk ubah, atau hapus untuk remove dari portfolio</div>
+        </div>
+        <button class="topbar-btn btn-primary" onclick="openModal()" style="padding:8px 18px;font-size:11px">+ Tambah</button>
+      </div>
+      <div class="section-card-body" style="padding:0">
+        <table class="video-table">
+          <thead>
+            <tr>
+              <th>Thumbnail</th>
+              <th>Judul</th>
+              <th>Klien</th>
+              <th>Kategori</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="videoTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-icon">🎬</div>
+          <div class="empty-title">Belum Ada Video</div>
+          <p>Klik "+ Tambah Video" untuk mulai mengisi portfolio</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: HERO VIDEO -->
+  <div class="page" id="page-hero">
+    <div class="section-card">
+      <div class="section-card-header">
+        <div>
+          <div class="section-card-title">VIDEO UTAMA HERO</div>
+          <div class="section-card-sub">Ubah video showreel yang muncul di section paling atas website</div>
+        </div>
+        <a href="index.html#home" target="_blank" class="topbar-btn btn-primary" style="text-decoration:none;font-size:11px;padding:8px 18px">↗ Lihat Hero</a>
+      </div>
+      <div class="section-card-body">
+        <div class="form-group">
+          <label class="form-label">Judul Video</label>
+          <input class="form-input" id="mainTitle" placeholder="Contoh: Showreel 2024"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">YouTube URL *</label>
+          <input class="form-input" id="mainUrl" placeholder="https://youtu.be/XXXXXXX atau https://youtube.com/watch?v=XXXXXXX"/>
+        </div>
+        <div id="mainPreviewWrap" style="display:none;margin-top:8px">
+          <img id="mainPreviewThumb" style="width:100%;max-width:720px;border-radius:4px;aspect-ratio:16/9;object-fit:cover;background:#1a1a1a;display:block" alt="Preview video hero"/>
+        </div>
+        <div class="modal-actions" style="justify-content:flex-start">
+          <button class="modal-save" onclick="saveMainVideo()">Simpan Video Hero</button>
+          <button class="modal-cancel" onclick="resetMainVideo()">Reset Default</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: PREVIEW -->
+  <div class="page" id="page-preview">
+    <div class="section-card">
+      <div class="section-card-header">
+        <div>
+          <div class="section-card-title">PREVIEW PORTFOLIO</div>
+          <div class="section-card-sub">Tampilan video seperti di website</div>
+        </div>
+        <a href="index.html" target="_blank" class="topbar-btn btn-primary" style="text-decoration:none;font-size:11px;padding:8px 18px">↗ Buka Website</a>
+      </div>
+      <div class="section-card-body">
+        <div class="preview-grid" id="previewGrid"></div>
+        <div class="empty-state" id="previewEmpty" style="display:none">
+          <div class="empty-icon">🎬</div>
+          <div class="empty-title">Belum Ada Video</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="section-card">
+      <div class="section-card-header">
+        <div>
+          <div class="section-card-title">PENGATURAN</div>
+          <div class="section-card-sub">Konfigurasi website Triple AAA Agency</div>
+        </div>
+      </div>
+      <div class="section-card-body">
+        <div class="settings-group">
+          <div class="settings-label">Informasi Kontak</div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Nomor WhatsApp</div>
+              <div class="settings-row-sub">Digunakan untuk tombol chat di website</div>
+            </div>
+            <span style="color:var(--yellow);font-size:13px;font-weight:600">+62 896-5284-3768</span>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Email</div>
+              <div class="settings-row-sub">Tampil di section Contact</div>
+            </div>
+            <span style="color:rgba(255,255,255,0.5);font-size:13px">hello@tripleaaa.id</span>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Lokasi</div>
+              <div class="settings-row-sub">Tampil di section Contact</div>
+            </div>
+            <span style="color:rgba(255,255,255,0.5);font-size:13px">Jakarta, Indonesia</span>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-label">Data</div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Export videos.json</div>
+              <div class="settings-row-sub">Download data terbaru untuk diupload ke GitHub</div>
+            </div>
+            <button class="tbl-action" onclick="exportVideosJson()" style="padding:8px 16px">Download JSON</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Reset Video Hero</div>
+              <div class="settings-row-sub">Kembalikan video utama di section hero ke default</div>
+            </div>
+            <button class="tbl-action del" onclick="resetMainVideo()" style="padding:8px 16px">Reset Hero</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Reset Data Video</div>
+              <div class="settings-row-sub">Kembalikan ke data contoh awal</div>
+            </div>
+            <button class="tbl-action del" onclick="resetData()" style="padding:8px 16px">Reset Default</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Hapus Semua Video</div>
+              <div class="settings-row-sub">Kosongkan seluruh portfolio</div>
+            </div>
+            <button class="tbl-action del" onclick="clearAll()" style="padding:8px 16px">Hapus Semua</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-label">Tentang Dashboard</div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Versi</div>
+            </div>
+            <span style="color:rgba(255,255,255,0.3);font-size:12px">Triple AAA Dashboard v1.0</span>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Storage</div>
+              <div class="settings-row-sub">Data tersimpan di browser (localStorage)</div>
+            </div>
+            <span style="color:var(--yellow);font-size:12px;font-weight:600" id="storageInfo">— video</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">TAMBAH VIDEO</div>
+    <div class="modal-sub">Masukkan detail video YouTube yang ingin ditampilkan</div>
+    <div class="form-group">
+      <label class="form-label">Judul Video *</label>
+      <input class="form-input" id="fTitle" placeholder="Contoh: Brand Story — Nama Klien"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nama Klien</label>
+        <input class="form-input" id="fClient" placeholder="Nama klien atau Internal"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kategori *</label>
+        <select class="form-select" id="fCategory">
+          <option value="Branded Content">Branded Content</option>
+          <option value="Commercial">Commercial</option>
+          <option value="Motion Graphic">Motion Graphic</option>
+          <option value="Corporate">Corporate</option>
+          <option value="Social Media">Social Media</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">YouTube URL *</label>
+      <input class="form-input" id="fUrl" placeholder="https://youtu.be/XXXXXXX atau https://youtube.com/watch?v=XXXXXXX"/>
+    </div>
+    <div id="thumbPreview" style="display:none;margin-top:8px">
+      <img id="thumbImg" style="width:100%;border-radius:4px;aspect-ratio:16/9;object-fit:cover;background:#1a1a1a" alt="thumbnail"/>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Batal</button>
+      <button class="modal-save" onclick="saveVideo()">Simpan Video</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✓</span>
+  <span id="toastMsg">Perubahan disimpan!</span>
+</div>
+
+<script>
+// ==========================================
+// DATA
+// ==========================================
+const DEFAULT_VIDEOS = [
+  { id: 1, title: "Brand Story — Contoh Klien 1", client: "Klien A", category: "Branded Content", youtubeUrl: "https://www.youtube.com/watch?v=w2siO0lxnOA" },
+  { id: 2, title: "Commercial 30s — Contoh Klien 2", client: "Klien B", category: "Commercial", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { id: 3, title: "Motion Reel 2024", client: "Internal", category: "Motion Graphic", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+];
+const DEFAULT_MAIN_VIDEO = {
+  youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  title: "Showreel 2024"
+};
+
+function loadVideos() {
+  try {
+    const saved = localStorage.getItem('tripleaaa_videos');
+    return saved ? JSON.parse(saved) : DEFAULT_VIDEOS;
+  } catch(e) { return [...DEFAULT_VIDEOS]; }
+}
+
+function saveToStorage(data) {
+  localStorage.setItem('tripleaaa_videos', JSON.stringify(data));
+}
+
+function loadMainVideo() {
+  try {
+    const saved = localStorage.getItem('tripleaaa_main_video');
+    return saved ? JSON.parse(saved) : { ...DEFAULT_MAIN_VIDEO };
+  } catch(e) { return { ...DEFAULT_MAIN_VIDEO }; }
+}
+
+function saveMainToStorage(data) {
+  localStorage.setItem('tripleaaa_main_video', JSON.stringify(data));
+}
+
+let videoData = loadVideos();
+let mainVideoData = loadMainVideo();
+let editingId = null;
+
+// ==========================================
+// UTILS
+// ==========================================
+function getYouTubeId(url) {
+  if (!url) return null;
+  const regex = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&\n]+)/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+function getThumbnail(url) {
+  const id = getYouTubeId(url);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '';
+}
+
+// ==========================================
+// PAGE NAVIGATION
+// ==========================================
+const pageMeta = {
+  videos:   { title: 'VIDEO PORTFOLIO',  sub: 'Kelola video yang ditampilkan di website' },
+  hero:     { title: 'VIDEO HERO',       sub: 'Kelola video utama di section hero website' },
+  preview:  { title: 'PREVIEW',          sub: 'Lihat tampilan portfolio seperti di website' },
+  settings: { title: 'PENGATURAN',       sub: 'Konfigurasi dan preferensi dashboard' },
+};
+
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const meta = pageMeta[id] || {};
+  document.getElementById('pageTitle').textContent = meta.title || '';
+  document.getElementById('pageSub').textContent = meta.sub || '';
+  // Show/hide topbar buttons
+  const addBtn = document.querySelector('.topbar-right .btn-primary');
+  const resetBtn = document.querySelector('.topbar-right .btn-outline');
+  addBtn.style.display = id === 'videos' ? '' : 'none';
+  resetBtn.style.display = id === 'videos' ? '' : 'none';
+  if (id === 'hero') renderMainVideoSettings();
+  if (id === 'preview') renderPreview();
+  if (id === 'settings') document.getElementById('storageInfo').textContent = videoData.length + ' video + 1 hero';
+}
+
+// ==========================================
+// RENDER TABLE
+// ==========================================
+function renderTable() {
+  const tbody = document.getElementById('videoTableBody');
+  const empty = document.getElementById('emptyState');
+  const badge = document.getElementById('videoBadge');
+
+  badge.textContent = videoData.length;
+  document.getElementById('statTotal').textContent = videoData.length;
+  document.getElementById('statBranded').textContent = videoData.filter(v => v.category === 'Branded Content').length;
+  document.getElementById('statCommercial').textContent = videoData.filter(v => v.category === 'Commercial').length;
+  document.getElementById('statOther').textContent = videoData.filter(v => !['Branded Content','Commercial'].includes(v.category)).length;
+
+  if (videoData.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = videoData.map(v => {
+    const thumb = getThumbnail(v.youtubeUrl);
+    const catClass = 'cat-' + v.category.replace(/\s/g,' ');
+    return `
+      <tr>
+        <td><img class="video-thumb-mini" src="${thumb}" alt="${v.title}" onerror="this.style.background='#2a2a2a'"/></td>
+        <td style="max-width:200px"><div style="font-weight:600">${v.title || '<em style="color:rgba(255,255,255,0.3)">Tanpa judul</em>'}</div></td>
+        <td style="color:rgba(255,255,255,0.5)">${v.client || '—'}</td>
+        <td><span class="cat-badge ${catClass}">${v.category}</span></td>
+        <td>
+          <button class="tbl-action" onclick="openModal(${v.id})">✎ Edit</button>
+          <button class="tbl-action del" onclick="deleteVideo(${v.id})">✕ Hapus</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ==========================================
+// RENDER PREVIEW
+// ==========================================
+function renderPreview() {
+  const grid = document.getElementById('previewGrid');
+  const empty = document.getElementById('previewEmpty');
+  if (videoData.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = videoData.map(v => `
+    <div class="preview-card">
+      <img class="preview-thumb" src="${getThumbnail(v.youtubeUrl)}" alt="${v.title}" onerror="this.style.background='#2a2a2a'"/>
+      <div class="preview-info">
+        <div class="preview-cat">${v.category}</div>
+        <div class="preview-title">${v.title || 'Tanpa judul'}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px">${v.client || ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==========================================
+// MODAL
+// ==========================================
+function openModal(id = null) {
+  editingId = id;
+  const modal = document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent = id ? 'EDIT VIDEO' : 'TAMBAH VIDEO';
+
+  if (id) {
+    const v = videoData.find(x => x.id === id);
+    document.getElementById('fTitle').value = v.title;
+    document.getElementById('fClient').value = v.client;
+    document.getElementById('fCategory').value = v.category;
+    document.getElementById('fUrl').value = v.youtubeUrl;
+    updateThumbPreview(v.youtubeUrl);
+  } else {
+    document.getElementById('fTitle').value = '';
+    document.getElementById('fClient').value = '';
+    document.getElementById('fCategory').value = 'Branded Content';
+    document.getElementById('fUrl').value = '';
+    document.getElementById('thumbPreview').style.display = 'none';
+  }
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+document.getElementById('fUrl').addEventListener('input', e => updateThumbPreview(e.target.value));
+
+function updateThumbPreview(url) {
+  const id = getYouTubeId(url);
+  const wrap = document.getElementById('thumbPreview');
+  const img = document.getElementById('thumbImg');
+  if (id) {
+    img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    wrap.style.display = 'block';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function renderMainVideoSettings() {
+  mainVideoData = loadMainVideo();
+  document.getElementById('mainTitle').value = mainVideoData.title || '';
+  document.getElementById('mainUrl').value = mainVideoData.youtubeUrl || '';
+  updateMainPreview(mainVideoData.youtubeUrl);
+}
+
+function updateMainPreview(url) {
+  const id = getYouTubeId(url);
+  const wrap = document.getElementById('mainPreviewWrap');
+  const img = document.getElementById('mainPreviewThumb');
+  if (id) {
+    img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    wrap.style.display = 'block';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+document.getElementById('mainUrl').addEventListener('input', e => updateMainPreview(e.target.value));
+
+function saveMainVideo() {
+  const title = document.getElementById('mainTitle').value.trim() || 'Showreel';
+  const youtubeUrl = document.getElementById('mainUrl').value.trim();
+
+  if (!youtubeUrl || !getYouTubeId(youtubeUrl)) {
+    alert('Masukkan YouTube URL yang valid!');
+    return;
+  }
+
+  mainVideoData = { title, youtubeUrl };
+  saveMainToStorage(mainVideoData);
+  updateMainPreview(youtubeUrl);
+  showToast('Video hero berhasil diperbarui!');
+}
+
+function resetMainVideo() {
+  if (!confirm('Reset video hero ke default?')) return;
+  mainVideoData = { ...DEFAULT_MAIN_VIDEO };
+  saveMainToStorage(mainVideoData);
+  renderMainVideoSettings();
+  showToast('Video hero direset ke default.');
+}
+
+function saveVideo() {
+  const title = document.getElementById('fTitle').value.trim();
+  const client = document.getElementById('fClient').value.trim();
+  const category = document.getElementById('fCategory').value;
+  const youtubeUrl = document.getElementById('fUrl').value.trim();
+
+  if (!title) { alert('Judul wajib diisi!'); return; }
+  if (!youtubeUrl || !getYouTubeId(youtubeUrl)) { alert('Masukkan YouTube URL yang valid!'); return; }
+
+  if (editingId) {
+    const v = videoData.find(x => x.id === editingId);
+    if (v) { v.title = title; v.client = client; v.category = category; v.youtubeUrl = youtubeUrl; }
+    showToast('Video berhasil diperbarui!');
+  } else {
+    videoData.push({ id: Date.now(), title, client, category, youtubeUrl });
+    showToast('Video berhasil ditambahkan!');
+  }
+
+  saveToStorage(videoData);
+  renderTable();
+  closeModal();
+}
+
+// ==========================================
+// DELETE
+// ==========================================
+function deleteVideo(id) {
+  if (!confirm('Yakin ingin menghapus video ini dari portfolio?')) return;
+  videoData = videoData.filter(v => v.id !== id);
+  saveToStorage(videoData);
+  renderTable();
+  showToast('Video dihapus dari portfolio.');
+}
+
+function resetData() {
+  if (!confirm('Reset ke data contoh awal?')) return;
+  videoData = [...DEFAULT_VIDEOS];
+  saveToStorage(videoData);
+  renderTable();
+  showToast('Data direset ke default.');
+}
+
+function clearAll() {
+  if (!confirm('Hapus SEMUA video dari portfolio? Ini tidak bisa dibatalkan.')) return;
+  videoData = [];
+  saveToStorage(videoData);
+  renderTable();
+  showToast('Semua video dihapus.');
+}
+
+function exportVideosJson() {
+  const data = {
+    mainVideo: loadMainVideo(),
+    videos: videoData
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'videos.json';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  showToast('videos.json berhasil dibuat.');
+}
+
+// ==========================================
+// TOAST
+// ==========================================
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ==========================================
+// INIT
+// ==========================================
+renderTable();
+</script>
+</body>
+</html>
