@@ -303,6 +303,17 @@
       .video-modal-close { top:14px;right:14px;width:40px;height:40px;background:transparent;backdrop-filter:none; }
       .video-modal-dots { right:14px; }
     }
+
+    /* CUSTOM PLAYER CONTROLS */
+    .yt-player-wrapper { position:relative;width:100%;height:100%; }
+    .yt-custom-controls { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.4) 80%,transparent);padding:20px 16px 12px;display:flex;align-items:center;justify-content:space-between;z-index:10;opacity:0;transition:opacity .3s ease; }
+    .yt-player-wrapper:hover .yt-custom-controls { opacity:1; }
+    .yt-control-left { display:flex;align-items:center;gap:12px; }
+    .yt-btn { background:none;border:none;color:var(--white);cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;transition:color .2s;font-size:18px; }
+    .yt-btn:hover { color:var(--yellow); }
+    .yt-btn.play-pause { font-size:22px; }
+    .yt-fullscreen-btn { background:none;border:none;color:var(--white);cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;transition:color .2s;font-size:18px; }
+    .yt-fullscreen-btn:hover { color:var(--yellow); }
   </style>
 </head>
 <body>
@@ -572,12 +583,26 @@ function initHeroVideo(){
   }
 }
 
+let heroPlayer=null;
 function playHeroVideo(){
   const mv=mainVideoData;
-  const embedUrl=getEmbedUrl(mv.youtubeUrl);
-  if(!embedUrl)return;
+  const id=getYouTubeId(mv.youtubeUrl);
+  if(!id)return;
   const c=document.getElementById('heroVideoContainer');
-  c.innerHTML=`<iframe src="${embedUrl}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen style="width:100%;height:100%;border:none;display:block;border-radius:20px"></iframe>`;
+  c.innerHTML=`<div class="yt-player-wrapper"><div id="heroYTPlayer"></div><div class="yt-custom-controls"><div class="yt-control-left"><button class="yt-btn play-pause" id="heroPlayPauseBtn" title="Play/Pause">▶</button></div><button class="yt-fullscreen-btn" id="heroFullscreenBtn" title="Fullscreen">⛶</button></div></div>`;
+  if(window.YT&&window.YT.Player){
+    heroPlayer=new YT.Player('heroYTPlayer',{width:'100%',height:'100%',videoId:id,playerVars:{controls:0,modestbranding:1,rel:0,showinfo:0,fs:1,autoplay:1},events:{onReady:()=>setupHeroControls()}});
+  }
+}
+function setupHeroControls(){
+  const playBtn=document.getElementById('heroPlayPauseBtn');
+  const fsBtn=document.getElementById('heroFullscreenBtn');
+  if(!playBtn||!fsBtn||!heroPlayer)return;
+  playBtn.addEventListener('click',()=>{
+    if(heroPlayer.getPlayerState()===1)heroPlayer.pauseVideo();
+    else heroPlayer.playVideo();
+  });
+  fsBtn.addEventListener('click',()=>heroPlayer.requestFullscreen?heroPlayer.requestFullscreen():document.getElementById('heroYTPlayer').requestFullscreen?.());
 }
 
 let activeFilter='all';
@@ -753,6 +778,7 @@ function animateModalScroll(track,target){
   modalScrollAnimation=requestAnimationFrame(step);
 }
 
+let modalPlayers={};
 function setActiveModalVideo(index){
   const items=[...document.querySelectorAll('.video-modal-item')];
   if(!items.length)return;
@@ -761,17 +787,36 @@ function setActiveModalVideo(index){
     item.classList.toggle('is-active',itemIndex===activeModalIndex);
     const player=item.querySelector('.video-modal-player');
     if(itemIndex===activeModalIndex){
-      const embed=getEmbedUrl(item.dataset.youtubeUrl);
-      if(embed&&!player.querySelector('iframe')){
+      const ytId=getYouTubeId(item.dataset.youtubeUrl);
+      const videoId=item.dataset.videoId;
+      if(ytId&&!player.querySelector('.yt-player-wrapper')){
         const title=item.querySelector('.video-modal-title')?.textContent||'Portfolio video';
-        player.innerHTML=`<iframe src="${embed}" title="${escapeHTML(title)}" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen></iframe>`;
+        player.innerHTML=`<div class="yt-player-wrapper"><div id="ytPlayer${videoId}"></div><div class="yt-custom-controls"><div class="yt-control-left"><button class="yt-btn play-pause" data-video="${videoId}" title="Play/Pause">▶</button></div><button class="yt-fullscreen-btn" data-video="${videoId}" title="Fullscreen">⛶</button></div></div>`;
+        if(window.YT&&window.YT.Player){
+          modalPlayers[videoId]=new YT.Player(`ytPlayer${videoId}`,{width:'100%',height:'100%',videoId:ytId,playerVars:{controls:0,modestbranding:1,rel:0,showinfo:0,fs:1,autoplay:1},events:{onReady:()=>setupModalControls(videoId)}});
+        }
       }
-    }else if(player.querySelector('iframe')){
+    }else if(player.querySelector('.yt-player-wrapper')){
       const video=videoData.find(v=>String(v.id)===String(item.dataset.videoId));
+      if(modalPlayers[item.dataset.videoId]){modalPlayers[item.dataset.videoId].destroy();delete modalPlayers[item.dataset.videoId];}
       player.innerHTML=`<img src="${escapeHTML(getThumbnail(item.dataset.youtubeUrl))}" alt="${escapeHTML(video?.title||'Portfolio video')}" loading="lazy"/>`;
     }
   });
   document.querySelectorAll('.video-modal-dot').forEach((dot,dotIndex)=>dot.classList.toggle('active',dotIndex===activeModalIndex));
+}
+function setupModalControls(videoId){
+  const playBtn=document.querySelector(`.yt-btn.play-pause[data-video="${videoId}"]`);
+  const fsBtn=document.querySelector(`.yt-fullscreen-btn[data-video="${videoId}"]`);
+  const player=modalPlayers[videoId];
+  if(!playBtn||!fsBtn||!player)return;
+  playBtn.addEventListener('click',()=>{
+    if(player.getPlayerState()===1)player.pauseVideo();
+    else player.playVideo();
+  });
+  fsBtn.addEventListener('click',()=>{
+    const wrapper=document.querySelector(`.video-modal-player[data-player="${videoId}"]`)?.closest('.yt-player-wrapper');
+    if(wrapper)wrapper.requestFullscreen?.();
+  });
 }
 
 function updateModalActiveFromScroll(){
@@ -861,6 +906,11 @@ async function initSite(){
 }
 
 initSite();
+</script>
+
+<!-- YouTube Player API -->
+<script>
+var tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';var firstScriptTag=document.getElementsByTagName('script')[0];firstScriptTag.parentNode.insertBefore(tag,firstScriptTag);
 </script>
 </body>
 </html>
