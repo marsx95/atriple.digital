@@ -555,7 +555,7 @@ window.addEventListener('storage',e=>{
 
 function getYouTubeId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&\n]+)/);return m?m[1]:null;}
 function getThumbnail(url){const id=getYouTubeId(url);return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:'';}
-function getEmbedUrl(url){const id=getYouTubeId(url);return id?`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`:'';}
+function getEmbedUrl(url){const id=getYouTubeId(url);return id?`https://www.youtube.com/embed/${id}?autoplay=1&rel=0&controls=0`:'';}
 function escapeHTML(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function getVideoCaption(video){
   if(!video)return'';
